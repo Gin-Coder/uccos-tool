@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "setting": {
+      "title": "Setting",
+      "description": "Generation rules for accounts.",
+      "type": "object",
+      "properties": {
+        "usernameFormat": {
+          "type": "string",
+          "description": "Format for username generation."
+        },
+        "passwordFormat": {
+          "type": "string",
+          "description": "Format for password generation."
+        },
+        "emailFormat": {
+          "type": "string",
+          "description": "Format for email generation."
+        },
+        "emailDomain": {
+          "type": "string",
+          "description": "Domain for generated emails."
+        }
+      },
+      "required": ["usernameFormat", "passwordFormat", "emailFormat", "emailDomain"]
+    },
+    "account": {
+      "title": "Account",
+      "description": "A generated user account.",
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "middlename": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "lead": {
+          "type": "number"
+        },
+        "leg": {
+          "type": "number"
+        },
+        "leaderAssoc": {
+          "type": "string"
+        },
+        "leaderLine": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "number"
+        },
+        "sucAcc": {
+          "type": "number"
+        },
+        "accountPro": {
+          "type": "number"
+        },
+        "qac": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "generated": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          },
+          "required": ["username", "password", "email"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of account creation."
+        }
+      },
+      "required": [
+        "firstname",
+        "lastname",
+        "lead",
+        "leg",
+        "leaderAssoc",
+        "leaderLine",
+        "position",
+        "ref",
+        "sucAcc",
+        "accountPro",
+        "qac",
+        "phone",
+        "generated",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/setting"
+      },
+      "description": "Stores editable generation rules. There should ideally be only one document in this collection."
+    },
+    "/accounts/{accountId}": {
+      "schema": {
+        "$ref": "#/entities/account"
+      },
+      "description": "Stores all generated user accounts."
+    }
+  }
+}
