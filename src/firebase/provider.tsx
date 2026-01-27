@@ -9,9 +9,8 @@ export const FirebaseProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // Initialize Firebase services here so it's only done once
-  getFirestore();
-  getAuth();
+  // Firebase services are initialized on-demand within getFirestore() and getAuth()
+  // No need to call them here for side-effects.
 
   return (
     <FirebaseContext.Provider value={null}>

@@ -191,23 +191,179 @@ export default function UccosAdminTool() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField control={form.control} name="firstname" render={({ field }) => ( <FormItem> <FormLabel>Prénom</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="middlename" render={({ field }) => ( <FormItem> <FormLabel>Deuxième prénom (optionnel)</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="lastname" render={({ field }) => ( <FormItem> <FormLabel>Nom de famille</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name="lead" render={({ field }) => ( <FormItem> <FormLabel>Lead</FormLabel> <FormControl> <Input type="number" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="leg" render={({ field }) => ( <FormItem> <FormLabel>Leg</FormLabel> <FormControl> <Input type="number" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    </div>
-                    <FormField control={form.control} name="leaderAssoc" render={({ field }) => ( <FormItem> <FormLabel>Leader Associé</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="leaderLine" render={({ field }) => ( <FormItem> <FormLabel>Ligne de Leader</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="position" render={({ field }) => ( <FormItem> <FormLabel>Position</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                     <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name="ref" render={({ field }) => ( <FormItem> <FormLabel>Ref</FormLabel> <FormControl> <Input type="number" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="sucAcc" render={({ field }) => ( <FormItem> <FormLabel>SucAcc</FormLabel> <FormControl> <Input type="number" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    </div>
-                    <FormField control={form.control} name="accountPro" render={({ field }) => ( <FormItem> <FormLabel>AccountPro</FormLabel> <FormControl> <Input type="number" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="qac" render={({ field }) => ( <FormItem> <FormLabel>QAC</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
-                    <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem> <FormLabel>Téléphone</FormLabel> <FormControl> <Input {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
+                  <FormField
+                    control={form.control}
+                    name="firstname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="middlename"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Deuxième prénom (optionnel)</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom de famille</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="lead"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lead</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="leg"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Leg</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="leaderAssoc"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Leader Associé</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="leaderLine"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ligne de Leader</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="position"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Position</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="ref"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ref</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="sucAcc"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SucAcc</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="accountPro"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>AccountPro</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="qac"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>QAC</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Téléphone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <Button type="submit" className="w-full" disabled={loadingSettings || form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? 'Génération...' : 'Générer le compte'}
