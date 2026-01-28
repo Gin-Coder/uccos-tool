@@ -2,11 +2,23 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // This rule allows anyone to read or write to any document in your database.
-    // This is NOT secure. You should secure your database for production.
-    // See: https://firebase.google.com/docs/firestore/security/get-started
-    match /{document=**} {
+    // Public read/write access for accounts.
+    // In the future, this should be restricted to authenticated admins.
+    match /accounts/{accountId} {
       allow read, write: if true;
+    }
+
+    // Public read/write access for settings.
+    // In the future, this should be restricted to authenticated admins.
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Public read-only access for admins for now.
+    // Writing will be restricted to superadmins in the future.
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if false; // Disable writing for now
     }
   }
 }
