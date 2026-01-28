@@ -178,7 +178,7 @@ export default function ComptesPage() {
           <CardHeader>
             <CardTitle>Prévisualisation</CardTitle>
             <CardDescription>Veuillez vérifier les informations avant d'enregistrer.</CardDescription>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4">
              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 text-sm p-4 bg-muted rounded-md">
                 <p><strong>Nom:</strong> {previewData.firstname} {previewData.lastname}</p>
