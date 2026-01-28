@@ -1,6 +1,6 @@
 'use client';
-import React, { createContext, useContext } from 'react';
-import { getAuth, getFirestore } from '.';
+import React, { createContext, useContext, useMemo } from 'react';
+import { initializeFirebase } from '.';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 
@@ -16,11 +16,20 @@ export const FirebaseProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const firestore = getFirestore();
-  const auth = getAuth();
+  const services = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const result = initializeFirebase();
+      return { 
+        firestore: result?.firestore ?? null, 
+        auth: result?.auth ?? null 
+      };
+    }
+    // Return null services on the server
+    return { firestore: null, auth: null };
+  }, []);
 
   return (
-    <FirebaseContext.Provider value={{ firestore, auth }}>
+    <FirebaseContext.Provider value={services}>
         {children}
     </FirebaseContext.Provider>
   );

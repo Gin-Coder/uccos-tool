@@ -12,46 +12,23 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp | null = null;
+interface FirebaseServices {
+    app: FirebaseApp;
+    firestore: Firestore;
+    auth: Auth;
+}
 
-function getFirebaseApp(): FirebaseApp | null {
-  if (app) return app;
-
-  if (!firebaseConfig.apiKey) {
-    if (typeof window !== 'undefined') {
-        console.error("Firebase API key is missing. Please create a .env.local file with your Firebase credentials. Firebase features will be disabled.");
+export function initializeFirebase(): FirebaseServices | null {
+    if (!firebaseConfig.apiKey) {
+        if (typeof window !== 'undefined') {
+            console.error("Firebase API key is missing. Please create a .env.local file with your Firebase credentials. Firebase features will be disabled.");
+        }
+        return null;
     }
-    return null;
-  }
   
-  if (getApps().length) {
-    app = getApp();
-  } else {
-    app = initializeApp(firebaseConfig);
-  }
-  return app;
-}
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const firestore = getFirestoreSdk(app);
+    const auth = getAuthSdk(app);
 
-let firestore: Firestore | null = null;
-export function getFirestore(): Firestore | null {
-  if (firestore) {
-      return firestore;
-  }
-  const initializedApp = getFirebaseApp();
-  if (initializedApp) {
-    firestore = getFirestoreSdk(initializedApp);
-  }
-  return firestore;
-}
-
-let auth: Auth | null = null;
-export function getAuth(): Auth | null {
-  if (auth) {
-      return auth;
-  }
-  const initializedApp = getFirebaseApp();
-  if (initializedApp) {
-    auth = getAuthSdk(initializedApp);
-  }
-  return auth;
+    return { app, firestore, auth };
 }
