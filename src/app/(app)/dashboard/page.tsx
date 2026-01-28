@@ -1,13 +1,13 @@
 'use client';
 import { PageHeader } from '@/components/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { collection } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { Users } from 'lucide-react';
 
 export default function DashboardPage() {
-  const firestore = getFirestore();
+  const firestore = useFirestore();
   const [accountsSnapshot, loadingAccounts] = useCollection(
     firestore ? collection(firestore, 'accounts') : null
   );

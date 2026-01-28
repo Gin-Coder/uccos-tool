@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { generateAccountCredentials } from '@/lib/account-generator';
-import { getFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 
 const formSchema = z.object({
   firstname: z.string().min(1, 'Prénom est requis.'),
@@ -46,7 +46,7 @@ const formSchema = z.object({
 
 export function AccountForm() {
   const { toast } = useToast();
-  const firestore = getFirestore();
+  const firestore = useFirestore();
 
   const settingsRef = firestore ? doc(firestore, 'settings', 'rules') : null;
   const [settingsSnapshot, loadingSettings] = useDocument(settingsRef);

@@ -7,7 +7,7 @@ import {
   type DocumentData,
 } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Copy } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { getFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 
 interface Account extends DocumentData {
   id: string;
@@ -35,13 +35,24 @@ interface Account extends DocumentData {
 
 export function AccountsTable() {
   const { toast } = useToast();
-  const firestore = getFirestore();
+  const firestore = useFirestore();
 
-  const [accountsSnapshot, loadingAccounts] = useCollection(
+  const [accountsSnapshot, loadingAccounts, error] = useCollection(
     firestore
       ? query(collection(firestore, 'accounts'), orderBy('createdAt', 'desc'))
       : null
   );
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching accounts:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: "Impossible de charger les comptes. Vérifiez la console pour les erreurs de permissions ou d'index."
+      })
+    }
+  }, [error, toast])
 
   const [nameFilter, setNameFilter] = useState('');
   const [leadFilter, setLeadFilter] = useState('');

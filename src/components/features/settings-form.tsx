@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { getFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const settingsSchema = z.object({
@@ -30,7 +30,7 @@ const settingsSchema = z.object({
 
 export function SettingsForm() {
   const { toast } = useToast();
-  const firestore = getFirestore();
+  const firestore = useFirestore();
 
   // The settings are stored in a single document named 'rules' inside the 'settings' collection.
   const settingsRef = firestore ? doc(firestore, 'settings', 'rules') : null;
