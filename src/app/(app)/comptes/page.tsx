@@ -1,16 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
-import { useCollection, useDoc } from '@/firebase/hooks';
+import { useCollection, useDoc, useMemoFirebase } from '@/firebase/hooks';
 import type { Account, AccountFormData, GenerationSettings } from '@/types';
 import { generateAccountCredentials, validateFormData } from '@/lib/generation';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 function AccountForm({ settings, onPreview }: { settings: GenerationSettings, onPreview: (data: Account) => void }) {
   const [formData, setFormData] = useState<AccountFormData>({
@@ -81,36 +87,179 @@ function AccountForm({ settings, onPreview }: { settings: GenerationSettings, on
 }
 
 
-function AccountList() {
-    const db = useFirestore();
-    const accountsQuery = db ? query(collection(db, 'accounts'), orderBy('createdAt', 'desc')) : null;
-    const { data: accounts, loading } = useCollection<Account>(accountsQuery);
+function EditAccountDialog({ account, onOpenChange, onSave }: { account: Account | null, onOpenChange: (isOpen: boolean) => void, onSave: (data: Partial<Account>) => void }) {
+    const [formData, setFormData] = useState<Partial<Account>>({});
 
-    if (loading) return <p>Chargement des comptes...</p>;
+    const editableFields: (keyof Account)[] = ['firstname', 'lastname', 'middlename', 'phone', 'lead', 'leg', 'sucAcc', 'ref', 'username', 'password', 'email', 'displayDate'];
+
+    useEffect(() => {
+        if (account) {
+            setFormData(account);
+        }
+    }, [account]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSaveChanges = () => {
+        onSave(formData);
+    }
+
+    if (!account) return null;
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Comptes Générés Récemment</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {accounts && accounts.map(account => (
-                    <Card key={account.id} className="p-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 text-sm">
-                            <p><strong>Nom:</strong> {account.firstname} {account.lastname}</p>
-                            <p><strong>Username:</strong> {account.username}</p>
-                            <p><strong>Password:</strong> {account.password}</p>
-                            <p><strong>Email:</strong> {account.email}</p>
-                            <p><strong>Lead/Leg:</strong> {account.lead}/{account.leg}</p>
-                            <p><strong>SucAcc:</strong> {account.sucAcc}</p>
-                            <p><strong>Ref:</strong> {account.ref}</p>
-                            <p><strong>Phone:</strong> {account.phone}</p>
-                        </div>
-                    </Card>
-                ))}
-                {(!accounts || accounts.length === 0) && <p>Aucun compte n'a été généré pour le moment.</p>}
-            </CardContent>
-        </Card>
+        <Dialog open={!!account} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[800px]">
+                <DialogHeader>
+                    <DialogTitle>Modifier le compte</DialogTitle>
+                    <DialogDescription>
+                        Mettez à jour les informations du compte. Cliquez sur "Sauvegarder" pour appliquer les changements.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-3 gap-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
+                    {editableFields.map(key => (
+                         <div key={key} className="space-y-2">
+                             <Label htmlFor={`edit-${key}`} className="capitalize">{key}</Label>
+                             <Input 
+                                id={`edit-${key}`}
+                                name={key}
+                                value={(formData[key] as string) || ''}
+                                onChange={handleChange}
+                            />
+                         </div>
+                    ))}
+                </div>
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
+                    <Button type="button" onClick={handleSaveChanges}>Sauvegarder les changements</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function AccountList() {
+    const db = useFirestore();
+    const accountsQuery = useMemoFirebase(() => db ? query(collection(db, 'accounts'), orderBy('createdAt', 'desc')) : null, [db]);
+    const { data: accounts, loading } = useCollection<Account>(accountsQuery);
+    
+    const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+    const [deletingAccount, setDeletingAccount] = useState<Account | null>(null);
+
+    const handleUpdateAccount = async (updatedData: Partial<Account>) => {
+        if (!editingAccount || !db) return;
+        try {
+            const accountRef = doc(db, 'accounts', editingAccount.id);
+            const { id, ...dataToUpdate } = updatedData;
+            await updateDoc(accountRef, dataToUpdate);
+            alert('Compte mis à jour avec succès !');
+            setEditingAccount(null);
+        } catch (error) {
+            console.error('Error updating account:', error);
+            alert('Erreur lors de la mise à jour du compte.');
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        if (!deletingAccount || !db) return;
+        try {
+            await deleteDoc(doc(db, 'accounts', deletingAccount.id));
+            alert('Compte supprimé avec succès !');
+            setDeletingAccount(null);
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            alert('Erreur lors de la suppression du compte.');
+        }
+    };
+
+    if (loading) return <div className="text-center p-8">Chargement des comptes...</div>;
+
+    return (
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Comptes Générés</CardTitle>
+                    <CardDescription>Liste de tous les comptes enregistrés dans la base de données.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Nom & Email</TableHead>
+                                <TableHead>Username</TableHead>
+                                <TableHead>Password</TableHead>
+                                <TableHead>Stats</TableHead>
+                                <TableHead>Créé le</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {accounts && accounts.map(account => (
+                                <TableRow key={account.id}>
+                                    <TableCell>
+                                        <div className="font-medium">{account.firstname} {account.lastname}</div>
+                                        <div className="text-sm text-muted-foreground">{account.email}</div>
+                                    </TableCell>
+                                    <TableCell><span className="font-mono">{account.username}</span></TableCell>
+                                    <TableCell><span className="font-mono">{account.password}</span></TableCell>
+                                    <TableCell className="text-sm">
+                                      <div>Lead/Leg: {account.lead}/{account.leg}</div>
+                                      <div>Suc/Ref: {account.sucAcc}/{account.ref}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {account.createdAt?.toDate ? account.createdAt.toDate().toLocaleDateString('fr-FR') : 'N/A'}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Ouvrir menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => setEditingAccount(account)}>
+                                                    <Pencil className="mr-2 h-4 w-4" />
+                                                    <span>Modifier</span>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => setDeletingAccount(account)} className="text-red-600 focus:text-red-600">
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    <span>Supprimer</span>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {(!accounts || accounts.length === 0) && !loading && <p className="p-8 text-center text-muted-foreground">Aucun compte n'a été généré pour le moment.</p>}
+                </CardContent>
+            </Card>
+
+            <EditAccountDialog 
+                account={editingAccount} 
+                onOpenChange={(isOpen) => !isOpen && setEditingAccount(null)}
+                onSave={handleUpdateAccount}
+            />
+
+            <AlertDialog open={!!deletingAccount} onOpenChange={(isOpen) => !isOpen && setDeletingAccount(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer ce compte ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Cette action est irréversible. Le compte de <span className="font-bold">{deletingAccount?.firstname} {deletingAccount?.lastname}</span> sera définitivement supprimé de la base de données.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">Confirmer la suppression</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }
 
@@ -118,7 +267,7 @@ export default function ComptesPage() {
   const [previewData, setPreviewData] = useState<Account | null>(null);
   const db = useFirestore();
 
-  const settingsRef = db ? doc(db, 'settings', 'rules') : null;
+  const settingsRef = useMemoFirebase(() => db ? doc(db, 'settings', 'rules') : null, [db]);
   const { data: settings, loading: settingsLoading } = useDoc<GenerationSettings>(settingsRef);
 
   const handleSave = async () => {
