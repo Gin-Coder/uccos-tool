@@ -26,12 +26,12 @@ export function useDoc<T>(ref: DocumentReference | null) {
 
   useEffect(() => {
     if (!ref) {
-      setLoading(false);
-      setData(null);
+      // If the ref isn't ready, we are still in a "loading" state
+      // from the perspective of the page. Don't change the state,
+      // just wait for the ref to become available.
       return;
     }
 
-    setLoading(true);
     const unsubscribe = onSnapshot(
       ref,
       (snapshot) => {
@@ -63,12 +63,11 @@ export function useCollection<T>(q: Query | CollectionReference | null) {
 
     useEffect(() => {
         if (!q) {
-            setLoading(false);
-            setData(null);
+            // If the query isn't ready, we are still in a "loading" state.
+            // Don't change the state, just wait for the query to become available.
             return;
         }
 
-        setLoading(true);
         const unsubscribe = onSnapshot(q,
             (snapshot) => {
                 setLoading(false);
