@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/comptes', label: 'Comptes' },
   { href: '/regles', label: 'Règles' },
   { href: '/admins', label: 'Admins' },
@@ -27,7 +28,7 @@ export default function Header() {
                 href={link.href}
                 className={cn(
                   'transition-colors hover:text-foreground/80',
-                  pathname === link.href ? 'text-foreground' : 'text-foreground/60'
+                  pathname.startsWith(link.href) ? 'text-foreground' : 'text-foreground/60'
                 )}
               >
                 {link.label}

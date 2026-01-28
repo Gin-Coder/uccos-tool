@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 export default function RootPage() {
   useEffect(() => {
-    redirect('/comptes');
+    redirect('/dashboard');
   }, []);
 
   return (
