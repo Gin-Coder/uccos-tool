@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { initializeFirebase } from '.';
 import { useFirebase } from './provider';
 
@@ -22,9 +22,12 @@ export function FirebaseClientProvider({
     return initializeFirebase();
   }, []);
 
-  if (firebase) {
-    setFirebase(firebase);
-  }
+  useEffect(() => {
+    if (firebase) {
+      setFirebase(firebase);
+    }
+  }, [firebase, setFirebase]);
+
 
   // Render children, but only on the client where Firebase is available.
   return <>{children}</>;
