@@ -24,6 +24,10 @@ export function useDoc<T>(ref: DocumentReference | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  // The ref object itself might be re-created on every render, causing an infinite loop.
+  // We use its path as a dependency, which is a stable string.
+  const refPath = ref?.path;
+
   useEffect(() => {
     if (!ref) {
       // If the ref isn't ready, we are still in a "loading" state
@@ -51,7 +55,8 @@ export function useDoc<T>(ref: DocumentReference | null) {
     );
 
     return () => unsubscribe();
-  }, [ref]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refPath]); // Use the stable path string as the dependency
 
   return { data, loading, error };
 }
