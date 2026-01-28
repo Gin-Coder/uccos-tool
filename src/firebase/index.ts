@@ -1,6 +1,6 @@
-// 'use client'; // This file should be usable on the server for config, but functions are client-only
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,17 +11,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp;
-let db: Firestore;
-
-if (typeof window !== 'undefined' && firebaseConfig.apiKey) {
-    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-    db = getFirestore(app);
-} else {
-    // Provide null objects for server-side rendering
-    app = null as any;
-    db = null as any;
+export interface FirebaseInstances {
+  app: FirebaseApp;
+  db: Firestore;
+  auth: Auth;
 }
 
+export function initializeFirebase(): FirebaseInstances | null {
+  if (!firebaseConfig.apiKey) {
+    console.error("Firebase config is missing. Make sure you have a .env.local file with your Firebase credentials.");
+    return null;
+  }
 
-export { db };
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  return { app, db, auth };
+}

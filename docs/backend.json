@@ -6,29 +6,41 @@
       "type": "object",
       "properties": {
         "usernameFormat": {
-          "type": "string",
-          "description": "Format for username generation."
+          "type": "string"
         },
         "passwordFormat": {
-          "type": "string",
-          "description": "Format for password generation."
-        },
-        "emailFormat": {
-          "type": "string",
-          "description": "Format for email generation."
+          "type": "string"
         },
         "emailDomain": {
-          "type": "string",
-          "description": "Domain for generated emails."
+          "type": "string"
+        },
+        "allowManualDate": {
+          "type": "boolean"
+        },
+        "requiredFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["usernameFormat", "passwordFormat", "emailFormat", "emailDomain"]
+      "required": [
+        "usernameFormat",
+        "passwordFormat",
+        "emailDomain",
+        "allowManualDate",
+        "requiredFields"
+      ]
     },
     "account": {
       "title": "Account",
       "description": "A generated user account.",
       "type": "object",
       "properties": {
+        "displayDate": {
+          "type": "string",
+          "format": "date"
+        },
         "firstname": {
           "type": "string"
         },
@@ -44,29 +56,11 @@
         "leg": {
           "type": "number"
         },
-        "leaderAssoc": {
-          "type": "string"
-        },
-        "leaderLine": {
-          "type": "string"
-        },
-        "position": {
-          "type": "string"
-        },
-        "ref": {
-          "type": "number"
-        },
         "sucAcc": {
           "type": "number"
         },
-        "accountPro": {
+        "ref": {
           "type": "number"
-        },
-        "qac": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
         },
         "username": {
           "type": "string"
@@ -77,47 +71,80 @@
         "email": {
           "type": "string"
         },
+        "phone": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
-          "format": "date-time",
-          "description": "Timestamp of account creation."
+          "format": "date-time"
         }
       },
       "required": [
+        "displayDate",
         "firstname",
         "lastname",
         "lead",
         "leg",
-        "leaderAssoc",
-        "leaderLine",
-        "position",
-        "ref",
         "sucAcc",
-        "accountPro",
-        "qac",
-        "phone",
+        "ref",
         "username",
         "password",
         "email",
+        "phone",
+        "createdAt"
+      ]
+    },
+    "admin": {
+      "title": "Admin",
+      "description": "An administrator user.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "superadmin"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "email",
+        "role",
         "createdAt"
       ]
     }
   },
   "auth": {
-    "providers": []
+    "providers": [
+      "google.com"
+    ]
   },
   "firestore": {
     "/settings/{settingId}": {
       "schema": {
         "$ref": "#/entities/setting"
       },
-      "description": "Stores editable generation rules. There should ideally be only one document in this collection."
+      "description": "Stores documents for generation rules. The main document is 'rules'."
     },
     "/accounts/{accountId}": {
       "schema": {
         "$ref": "#/entities/account"
       },
       "description": "Stores all generated user accounts."
+    },
+    "/admins/{adminId}": {
+      "schema": {
+        "$ref": "#/entities/admin"
+      },
+      "description": "Stores administrator users, planned for future use with Firebase Authentication."
     }
   }
 }
