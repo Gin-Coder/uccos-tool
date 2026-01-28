@@ -14,7 +14,7 @@ export function FirebaseClientProvider({
   // The useMemo hook is critical here. It ensures that Firebase is only
   // initialized once on the client and that the same instance is reused.
   // Without it, a new Firebase app would be created on every render.
-  const firebase = useMemo(()/Users/dpe/Downloads/firebase-studio-rules-demo-main/src/app/(app)/comptes/page.tsx
+  const firebase = useMemo(() => {
     if (typeof window === 'undefined') {
       return null;
     }
