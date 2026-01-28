@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc } from 'firebase/firestore';
-import { useFirestore, useCollection, useDoc } from '@/firebase/hooks';
+import { useFirestore } from '@/firebase/provider';
+import { useCollection, useDoc } from '@/firebase/hooks';
 import type { Account, AccountFormData, GenerationSettings } from '@/types';
 import { generateAccountCredentials, validateFormData } from '@/lib/generation';
 

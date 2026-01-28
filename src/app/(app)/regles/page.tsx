@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useFirestore, useDoc } from '@/firebase/hooks';
+import { useFirestore } from '@/firebase/provider';
+import { useDoc } from '@/firebase/hooks';
 import { doc, setDoc } from 'firebase/firestore';
 import type { GenerationSettings, AccountFormData } from '@/types';
 
