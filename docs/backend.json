@@ -68,20 +68,14 @@
         "phone": {
           "type": "string"
         },
-        "generated": {
-          "type": "object",
-          "properties": {
-            "username": {
-              "type": "string"
-            },
-            "password": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            }
-          },
-          "required": ["username", "password", "email"]
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         },
         "createdAt": {
           "type": "string",
@@ -102,7 +96,9 @@
         "accountPro",
         "qac",
         "phone",
-        "generated",
+        "username",
+        "password",
+        "email",
         "createdAt"
       ]
     }

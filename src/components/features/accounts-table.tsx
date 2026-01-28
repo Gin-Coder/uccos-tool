@@ -28,11 +28,9 @@ interface Account extends DocumentData {
   firstname: string;
   lastname: string;
   lead: number;
-  generated: {
-    username: string;
-    password: string;
-    email: string;
-  };
+  username: string;
+  password: string;
+  email: string;
 }
 
 export function AccountsTable() {
@@ -116,14 +114,14 @@ export function AccountsTable() {
                   <TableCell>{account.lead}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span>{account.generated.username}</span>
+                      <span>{account.username}</span>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
                         onClick={() =>
                           copyToClipboard(
-                            account.generated.username,
+                            account.username,
                             'Username'
                           )
                         }
@@ -134,14 +132,14 @@ export function AccountsTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span>{account.generated.password}</span>
+                      <span>{account.password}</span>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
                         onClick={() =>
                           copyToClipboard(
-                            account.generated.password,
+                            account.password,
                             'Password'
                           )
                         }

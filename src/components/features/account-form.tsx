@@ -92,8 +92,8 @@ export function AccountForm() {
     try {
       await addDoc(collection(firestore, 'accounts'), {
         ...values,
+        ...generated,
         middlename: values.middlename || 'none',
-        generated,
         createdAt: serverTimestamp(),
       });
       toast({
