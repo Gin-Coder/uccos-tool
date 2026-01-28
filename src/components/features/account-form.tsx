@@ -6,9 +6,10 @@ import * as z from 'zod';
 import {
   addDoc,
   collection,
+  doc,
   serverTimestamp,
 } from 'firebase/firestore';
-import { useCollection } from 'react-firebase-hooks/firestore';
+import { useDocument } from 'react-firebase-hooks/firestore';
 import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -47,9 +48,8 @@ export function AccountForm() {
   const { toast } = useToast();
   const firestore = getFirestore();
 
-  const [settingsSnapshot, loadingSettings] = useCollection(
-    firestore ? collection(firestore, 'settings') : null
-  );
+  const settingsRef = firestore ? doc(firestore, 'settings', 'rules') : null;
+  const [settingsSnapshot, loadingSettings] = useDocument(settingsRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,8 +63,8 @@ export function AccountForm() {
   });
 
   const settings = useMemo(() => {
-    if (!settingsSnapshot?.docs[0]) return null;
-    return settingsSnapshot.docs[0].data();
+    if (!settingsSnapshot?.exists()) return null;
+    return settingsSnapshot.data();
   }, [settingsSnapshot]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -73,7 +73,7 @@ export function AccountForm() {
         variant: 'destructive',
         title: 'Erreur',
         description:
-          'Les règles de génération ne sont pas chargées. Veuillez vérifier votre configuration Firebase.',
+          "Les règles de génération ne sont pas chargées. Assurez-vous qu'un document avec l'ID 'rules' existe dans la collection 'settings'.",
       });
       return;
     }

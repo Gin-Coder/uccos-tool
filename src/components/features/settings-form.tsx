@@ -32,9 +32,8 @@ export function SettingsForm() {
   const { toast } = useToast();
   const firestore = getFirestore();
 
-  // NOTE: We assume a single settings document with a known ID 'default'
-  // for simplicity. In a real app, this might be tied to a user or tenant.
-  const settingsRef = firestore ? doc(firestore, 'settings', 'default') : null;
+  // The settings are stored in a single document named 'rules' inside the 'settings' collection.
+  const settingsRef = firestore ? doc(firestore, 'settings', 'rules') : null;
   const [settingsSnapshot, loadingSettings, error] = useDocument(settingsRef);
 
   const form = useForm<z.infer<typeof settingsSchema>>({
@@ -58,7 +57,7 @@ export function SettingsForm() {
         variant: 'destructive',
         title: 'Erreur de chargement',
         description:
-          "Impossible de charger les paramètres. Assurez-vous qu'un document avec l'ID 'default' existe dans la collection 'settings'.",
+          "Impossible de charger les paramètres. Assurez-vous qu'un document avec l'ID 'rules' existe dans la collection 'settings'.",
       });
     }
   }, [error, toast])
