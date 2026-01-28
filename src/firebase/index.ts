@@ -1,9 +1,8 @@
-'use client';
-import { initializeApp, getApps, getApp, FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { getFirestore as getFirestoreSdk, Firestore } from 'firebase/firestore';
-import { getAuth as getAuthSdk, Auth } from 'firebase/auth';
+// 'use client'; // This file should be usable on the server for config, but functions are client-only
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getFirestore, Firestore } from 'firebase/firestore';
 
-const firebaseConfig: FirebaseOptions = {
+const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -12,23 +11,17 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-interface FirebaseServices {
-    app: FirebaseApp;
-    firestore: Firestore;
-    auth: Auth;
+let app: FirebaseApp;
+let db: Firestore;
+
+if (typeof window !== 'undefined' && firebaseConfig.apiKey) {
+    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    db = getFirestore(app);
+} else {
+    // Provide null objects for server-side rendering
+    app = null as any;
+    db = null as any;
 }
 
-export function initializeFirebase(): FirebaseServices | null {
-    if (!firebaseConfig.apiKey) {
-        if (typeof window !== 'undefined') {
-            console.error("Firebase API key is missing. Please create a .env.local file with your Firebase credentials. Firebase features will be disabled.");
-        }
-        return null;
-    }
-  
-    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-    const firestore = getFirestoreSdk(app);
-    const auth = getAuthSdk(app);
 
-    return { app, firestore, auth };
-}
+export { db };
