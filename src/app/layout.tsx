@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { FirebaseProvider } from '@/firebase/provider';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import Header from '@/components/layout/header';
 
 export const metadata: Metadata = {
@@ -18,14 +17,12 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body>
         <FirebaseProvider>
-          <FirebaseClientProvider>
-            <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-              <Header />
-              <main className="flex-grow container mx-auto p-4 md:p-8">
-                {children}
-              </main>
-            </div>
-          </FirebaseClientProvider>
+          <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+            <Header />
+            <main className="flex-grow container mx-auto p-4 md:p-8">
+              {children}
+            </main>
+          </div>
         </FirebaseProvider>
       </body>
     </html>
